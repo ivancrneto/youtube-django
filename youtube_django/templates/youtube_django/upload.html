@@ -2,8 +2,13 @@
 <html>
 <body>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+<h1>Upload your video</h1>
+<p>Here is the form:</p>
+<form action="." method="post" enctype="multipart/form-data">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Submit">
+</form>
 
 </body>
 </html>
