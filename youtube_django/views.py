@@ -45,3 +45,17 @@ class AuthorizeView(View):
             authorize_url = flow.step1_get_authorize_url()
             return redirect(authorize_url)
         return redirect('/')
+
+
+class Oauth2CallbackView(View):
+
+    def get(self, request, *args, **kwargs):
+        if not xsrfutil.validate_token(
+            settings.SECRET_KEY, request.GET.get('state').encode(),
+            request.user):
+                return HttpResponseBadRequest()
+        credential = flow.step2_exchange(request.GET)
+        storage = DjangoORMStorage(
+            GoogleAPIOauthInfo, 'id', request.user.id, 'credential')
+        storage.put(credential)
+        return redirect('/')
