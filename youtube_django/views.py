@@ -27,7 +27,7 @@ class VideoUploadView(FormView):
         fname = form.cleaned_data['video'].temporary_file_path()
 
         storage = DjangoORMStorage(
-            GoogleAPIOauthInfo, 'id', self.request.user.id, 'credential')
+            GoogleAPIOauthInfo, 'id', self.request.user.id, 'credentials')
         credentials = storage.get()
 
         client = build('youtube', 'v3', credentials=credentials)
@@ -75,15 +75,15 @@ class AuthorizeView(View):
 
     def get(self, request, *args, **kwargs):
         storage = DjangoORMStorage(
-            GoogleAPIOauthInfo, 'id', request.user.id, 'credential')
-        credential = storage.get()
+            GoogleAPIOauthInfo, 'id', request.user.id, 'credentials')
+        credentials = storage.get()
 
-        if credential is None or credential.invalid == True:
+        if credentials is None or credentials.invalid == True:
             flow.params['state'] = xsrfutil.generate_token(
                 settings.SECRET_KEY, request.user)
             authorize_url = flow.step1_get_authorize_url()
             return redirect(authorize_url)
-        return redirect('/')
+        return redirect('/upload/')
 
 
 class Oauth2CallbackView(View):
@@ -93,8 +93,8 @@ class Oauth2CallbackView(View):
             settings.SECRET_KEY, request.GET.get('state').encode(),
             request.user):
                 return HttpResponseBadRequest()
-        credential = flow.step2_exchange(request.GET)
+        credentials = flow.step2_exchange(request.GET)
         storage = DjangoORMStorage(
-            GoogleAPIOauthInfo, 'id', request.user.id, 'credential')
-        storage.put(credential)
-        return redirect('/')
+            GoogleAPIOauthInfo, 'id', request.user.id, 'credentials')
+        storage.put(credentials)
+        return redirect('/upload/')
