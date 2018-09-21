@@ -21,23 +21,25 @@ class VideoUploadView(FormView):
     form_class = YouTubeForm
 
 
+# the following variable stays as global for now
+flow = OAuth2WebServerFlow(
+    client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
+    client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+    scope='https://www.googleapis.com/auth/youtube',
+    redirect_uri='http://localhost:8888/oauth2callback/')
+# TODO: for a downloaded the client_secrets file
+'''flow = flow_from_clientsecrets(
+    settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON,
+    scope='https://www.googleapis.com/auth/youtube',
+    redirect_uri='http://localhost:8888/oauth2callback/')'''
+
+
 class AuthorizeView(View):
 
     def get(self, request, *args, **kwargs):
         storage = DjangoORMStorage(
             GoogleAPIOauthInfo, 'id', request.user.id, 'credential')
         credential = storage.get()
-        flow = OAuth2WebServerFlow(
-            client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
-            client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
-            scope='https://www.googleapis.com/auth/youtube',
-            redirect_uri='http://localhost:8888/oauth2callback/')
-
-        # TODO: for a downloaded the client_secrets file
-        '''flow = flow_from_clientsecrets(
-            settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON,
-            scope='https://www.googleapis.com/auth/youtube',
-            redirect_uri='http://localhost:8888/oauth2callback/')'''
 
         if credential is None or credential.invalid == True:
             flow.params['state'] = xsrfutil.generate_token(
