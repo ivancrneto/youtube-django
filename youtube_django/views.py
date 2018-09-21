@@ -16,7 +16,7 @@ from .models import GoogleAPIOauthInfo
 
 
 class YouTubeForm(forms.Form):
-    pass
+    video = forms.FileField()
 
 
 class VideoUploadView(FormView):
