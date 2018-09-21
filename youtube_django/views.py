@@ -1,15 +1,18 @@
+import tempfile
 from django import forms
 from django.conf import settings
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 from oauth2client.client import flow_from_clientsecrets, OAuth2WebServerFlow
 from oauth2client.contrib import xsrfutil
 from oauth2client.contrib.django_util.storage import DjangoORMStorage
 from .models import GoogleAPIOauthInfo
-
 
 
 class YouTubeForm(forms.Form):
@@ -19,6 +22,40 @@ class YouTubeForm(forms.Form):
 class VideoUploadView(FormView):
     template_name = 'youtube_django/upload.html'
     form_class = YouTubeForm
+
+    def form_valid(self, form):
+        fname = form.cleaned_data['video'].temporary_file_path()
+
+        storage = DjangoORMStorage(
+            GoogleAPIOauthInfo, 'id', self.request.user.id, 'credential')
+        credentials = storage.get()
+
+        client = build('youtube', 'v3', credentials=credentials)
+
+        body = {
+            'snippet': {
+                'title': 'My Django Youtube Video',
+                'description': 'My Django Youtube Video Description',
+                'tags': 'django,howto,video,api',
+                'categoryId': '27'
+            },
+            'status': {
+                'privacyStatus': 'unlisted'
+            }
+        }
+
+        with tempfile.NamedTemporaryFile('wb', suffix='yt-django') as tmpfile:
+            with open(fname, 'rb') as fileobj:
+                tmpfile.write(fileobj.read())
+                insert_request = client.videos().insert(
+                    part=','.join(body.keys()),
+                    body=body,
+                    media_body=MediaFileUpload(
+                        tmpfile.name, chunksize=-1, resumable=True)
+                )
+                insert_request.execute()
+
+        return HttpResponse('It worked!')
 
 
 # the following variable stays as global for now
