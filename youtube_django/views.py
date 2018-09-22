@@ -1,7 +1,7 @@
 import tempfile
 from django import forms
 from django.conf import settings
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
@@ -59,17 +59,8 @@ class VideoUploadView(FormView):
         return HttpResponse('It worked!')
 
 
-# the following variable stays as global for now
-flow = OAuth2WebServerFlow(
-    client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
-    client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
-    scope='https://www.googleapis.com/auth/youtube',
-    redirect_uri=reverse_lazy(settings.GOOGLE_OAUTH2_CALLBACK_VIEW))
-# TODO: for a downloaded the client_secrets file
-'''flow = flow_from_clientsecrets(
-    settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON,
-    scope='https://www.googleapis.com/auth/youtube',
-    redirect_uri=reverse_lazy(settings.GOOGLE_OAUTH2_CALLBACK_VIEW))'''
+# flow variable stays as global for now
+flow = None
 
 
 class AuthorizeView(View):
@@ -79,7 +70,21 @@ class AuthorizeView(View):
             GoogleAPIOauthInfo, 'id', request.user.id, 'credentials')
         credentials = storage.get()
 
-        if credentials is None or credentials.invalid == True:
+        global flow
+        flow = OAuth2WebServerFlow(
+            client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
+            client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+            scope='https://www.googleapis.com/auth/youtube',
+            redirect_uri=request.build_absolute_uri(
+                reverse(settings.GOOGLE_OAUTH2_CALLBACK_VIEW)))
+        # TODO: for a downloaded the client_secrets file
+        '''flow = flow_from_clientsecrets(
+            settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON,
+            scope='https://www.googleapis.com/auth/youtube',
+            redirect_uri=request.build_absolute_uri(
+                reverse(settings.GOOGLE_OAUTH2_CALLBACK_VIEW)))'''
+
+        if credentials is None or credentials.invalid:
             flow.params['state'] = xsrfutil.generate_token(
                 settings.SECRET_KEY, request.user)
             authorize_url = flow.step1_get_authorize_url()
@@ -94,6 +99,7 @@ class Oauth2CallbackView(View):
             settings.SECRET_KEY, request.GET.get('state').encode(),
             request.user):
                 return HttpResponseBadRequest()
+        global flow
         credentials = flow.step2_exchange(request.GET)
         storage = DjangoORMStorage(
             GoogleAPIOauthInfo, 'id', request.user.id, 'credentials')
