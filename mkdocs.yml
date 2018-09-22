@@ -1,0 +1,5 @@
+site_name: youtube-django docs
+pages:
+    - Home: index.md
+theme: readthedocs
+# site_dir: media/docs
