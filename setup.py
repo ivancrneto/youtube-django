@@ -64,9 +64,10 @@ setup(
     install_requires=install_reqs,
     tests_require=['tox', 'pytest', 'pytest-cov', 'coverage', 'codecov'],
     long_description=('%s\n%s' % (
-        read('README.rst'),
+        read('README.md'),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst')))
     ),
+    long_description_content_type='text/markdown',
     author='Ivan Neto',
     author_email='ivan.cr.neto@gmail.com',
     packages=find_packages('.'),
