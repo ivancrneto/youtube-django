@@ -1,6 +1,7 @@
 import tempfile
 from django import forms
 from django.conf import settings
+from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
@@ -63,12 +64,12 @@ flow = OAuth2WebServerFlow(
     client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
     client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
     scope='https://www.googleapis.com/auth/youtube',
-    redirect_uri='http://localhost:8888/oauth2callback/')
+    redirect_uri=reverse_lazy(settings.GOOGLE_OAUTH2_CALLBACK_VIEW))
 # TODO: for a downloaded the client_secrets file
 '''flow = flow_from_clientsecrets(
     settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON,
     scope='https://www.googleapis.com/auth/youtube',
-    redirect_uri='http://localhost:8888/oauth2callback/')'''
+    redirect_uri=reverse_lazy(settings.GOOGLE_OAUTH2_CALLBACK_VIEW))'''
 
 
 class AuthorizeView(View):
