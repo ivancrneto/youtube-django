@@ -55,7 +55,11 @@ setup(
     description=('YouTube API Data V3 and Google Authentication '
                  'implementation for Django'),
     include_package_data=True,
-    use_scm_version=True,
+    use_scm_version={
+        'version_scheme': 'post-release',
+        'write_to': 'version.txt',
+        'tag_regex': r'^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$',
+    },
     setup_requires=['pytest-runner', 'setuptools_scm'],
     install_requires=install_reqs,
     tests_require=['tox', 'pytest', 'pytest-cov', 'coverage', 'codecov'],
