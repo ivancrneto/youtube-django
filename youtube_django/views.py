@@ -3,14 +3,14 @@ from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
+from django.shortcuts import redirect
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-from oauth2client.client import flow_from_clientsecrets, OAuth2WebServerFlow
+# from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.contrib import xsrfutil
 from oauth2client.contrib.django_util.storage import DjangoORMStorage
 from .models import GoogleAPIOauthInfo
@@ -96,9 +96,9 @@ class Oauth2CallbackView(View):
 
     def get(self, request, *args, **kwargs):
         if not xsrfutil.validate_token(
-            settings.SECRET_KEY, request.GET.get('state').encode(),
-            request.user):
-                return HttpResponseBadRequest()
+                settings.SECRET_KEY, request.GET.get('state').encode(),
+                request.user):
+            return HttpResponseBadRequest()
         global flow
         credentials = flow.step2_exchange(request.GET)
         storage = DjangoORMStorage(
