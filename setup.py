@@ -56,7 +56,7 @@ setup(
                  'implementation for Django'),
     include_package_data=True,
     use_scm_version={
-        'version_scheme': 'post-release',
+        'version_scheme': 'guess-next-dev',
         'write_to': 'version.txt',
         'tag_regex': r'^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$',
     },
