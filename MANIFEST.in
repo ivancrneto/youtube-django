@@ -1,0 +1,7 @@
+recursive-include youtube_django/ *
+include LICENSE
+include *.md
+include *.rst
+include requirements.txt
+include setup.cfg
+include .coveragerc
