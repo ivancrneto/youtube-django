@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: themattrix/tox
     environment:
-      CACHE_KEY: "pyenv local 2.7.13 3.3.6 3.4.6 3.5.3 3.6.2 3.7.0"
+      CACHE_KEY: "pyenv local 2.7.15 3.3.7 3.4.9 3.5.6 3.6.6 3.7.0"
     steps:
       - checkout
       - restore_cache:
@@ -27,7 +27,7 @@ jobs:
           key: v1-dependencies-$CACHE_KEY-{{ checksum "tox.ini" }}
       - run:
           command: |
-            pyenv local 2.7.13 3.3.6 3.4.6 3.5.3 3.6.2 3.7.0
+            pyenv local 2.7.15 3.3.7 3.4.9 3.5.6 3.6.6 3.7.0
             pip install codecov
             tox
       - store_artifacts:
