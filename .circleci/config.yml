@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/youtube_django
+    docker:
+      - image: themattrix/tox
+    environment:
+      CACHE_KEY: "pyenv local 2.7.13 3.3.6 3.4.6 3.5.3 3.6.2 3.7.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-$CACHE_KEY-{{ checksum "tox.ini" }}
+          - v1-dependencies-
+      - run:
+          command: |
+            apt-get update -qq
+            apt-get install -yq make build-essential libssl-dev zlib1g-dev libbz2-dev
+            apt-get install -yq libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev
+            apt-get install -yq xz-utils tk-dev libffi-dev git
+      - run:
+          command: |
+            pip install tox tox-pyenv flake8
+      - save_cache:
+          paths:
+            - ./.pyenv
+          key: v1-dependencies-$CACHE_KEY-{{ checksum "tox.ini" }}
+      - run:
+          command: |
+            pyenv local 2.7.13 3.3.6 3.4.6 3.5.3 3.6.2 3.7.0
+            pip install codecov
+            tox
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+      - run: codecov --token=$CODECOV_TOKEN
