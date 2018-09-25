@@ -1,5 +1,8 @@
+import sys
 from django.test import TestCase
 
 
 class Test(TestCase):
-    pass
+
+    def test_simple(self):
+        assert 1 == 1
