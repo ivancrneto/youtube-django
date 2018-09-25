@@ -1,0 +1,18 @@
+[run]
+branch = True
+include = ./*
+omit =
+    */migrations/*
+    bin/*
+    example_app/*
+
+[report]
+omit =
+    .env/*
+    */migrations/*
+    */*test*.py
+    */urls.py
+    *manage.py
+    *wsgi.py
+    */*.jinja
+    */settings.py
