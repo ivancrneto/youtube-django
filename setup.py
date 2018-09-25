@@ -62,7 +62,8 @@ setup(
     },
     setup_requires=['pytest-runner', 'setuptools_scm'],
     install_requires=install_reqs,
-    tests_require=['tox', 'pytest', 'pytest-cov', 'coverage', 'codecov'],
+    tests_require=['tox', 'pytest', 'pytest-cov', 'pytest-django', 'coverage',
+                   'codecov'],
     long_description=('%s\n%s' % (
         read('README.md'),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst')))
