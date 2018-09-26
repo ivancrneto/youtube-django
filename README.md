@@ -1,5 +1,7 @@
 # youtube-django
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7100ebb9db8a4aad9f1a8a6c515cc82a)](https://app.codacy.com/app/ineto/youtube-django?utm_source=github.com&utm_medium=referral&utm_content=ivancrneto/youtube-django&utm_campaign=Badge_Grade_Settings)
+
 ## Install
 
 ``` bash
