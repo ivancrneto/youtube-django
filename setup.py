@@ -81,4 +81,9 @@ setup(
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*',
     extras_require={
     },
+    project_urls={
+        'Documentation': 'http://youtube-django.rtfd.io',
+        'Github': 'https://github.com/ivancrneto/youtube-django',
+        'Tracker': 'https://github.com/ivancrneto/youtube-django/issues',
+    },
 )
